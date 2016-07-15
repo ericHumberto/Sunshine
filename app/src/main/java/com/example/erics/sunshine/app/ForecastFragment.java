@@ -101,7 +101,7 @@ public class ForecastFragment extends Fragment {
                 String forecast = mForecastAdapter.getItem(i);
                 Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(view.getContext(), DetailActivity.class);
-                intent.putExtra(EXTRA_WEATHER_DATA, forecast);
+                intent.putExtra(intent.EXTRA_TEXT, forecast);
                 startActivity(intent);
             }
         });

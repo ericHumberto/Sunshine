@@ -1,6 +1,7 @@
 package com.example.erics.sunshine.app;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -37,6 +38,8 @@ import java.util.List;
 public class ForecastFragment extends Fragment {
 
     private ArrayAdapter<String> mForecastAdapter;
+
+    static final String EXTRA_WEATHER_DATA = "com.example.erics.sunshine.app.WEATHER_DATA";
 
     public ForecastFragment() {
     }
@@ -97,6 +100,9 @@ public class ForecastFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 String forecast = mForecastAdapter.getItem(i);
                 Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(view.getContext(), DetailActivity.class);
+                intent.putExtra(EXTRA_WEATHER_DATA, forecast);
+                startActivity(intent);
             }
         });
 

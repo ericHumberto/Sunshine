@@ -19,6 +19,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_detail">Details of weather</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="action_map">Map Location</string>
 
     <string name="pref_location_label">Location</string>
     <string name="pref_location_key" translatable="false">location</string>

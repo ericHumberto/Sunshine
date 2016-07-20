@@ -23,6 +23,38 @@ public class MainActivity extends AppCompatActivity {
                     .add(R.id.container, new ForecastFragment())
                     .commit();
         }
+
+        Log.d(LOG_TAG, "Create");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();  // Always call the superclass method first
+        Log.d(LOG_TAG, "Pause");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();  // Always call the superclass method first
+        Log.d(LOG_TAG, "Stop");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        Log.d(LOG_TAG, "Resume");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();  // Always call the superclass method first
+        Log.d(LOG_TAG, "Start");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();  // Always call the superclass method first
+        Log.d(LOG_TAG, "Destroy");
     }
 
     @Override

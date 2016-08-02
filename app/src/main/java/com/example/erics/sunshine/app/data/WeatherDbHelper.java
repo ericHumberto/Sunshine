@@ -6,7 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.erics.sunshine.app.data.WeatherContract.WeatherEntry;
 
-
 /**
  * Manages a local database for weather data.
  */

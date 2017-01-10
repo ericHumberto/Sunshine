@@ -9,8 +9,8 @@
     tools:context=".MainActivity">
 
     <ListView  android:id="@+id/list_item_forecast"
-    android:layout_width="wrap_content"
-    android:layout_height="492dp"
+        android:layout_width="wrap_content"
+        android:layout_height="492dp"
         android:layout_gravity="center" />
 
 </FrameLayout>

@@ -1,8 +1,10 @@
 package com.udacity.eric_.sunshine.app;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -10,6 +12,7 @@ import android.text.format.Time;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import com.udacity.eric_.sunshine.app.data.WeatherContract;
 import com.udacity.eric_.sunshine.app.data.WeatherContract.WeatherEntry;
 
 import org.json.JSONArray;
@@ -89,9 +92,37 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
      * @return the row ID of the added location.
      */
     long addLocation(String locationSetting, String cityName, double lat, double lon) {
-        // Students: First, check if the location with this city name exists in the db
-        // If it exists, return the current ID
-        // Otherwise, insert it using the content resolver and the base URI
+
+        try {
+            // Students: First, check if the location with this city name exists in the db
+            // If it exists, return the current ID
+            // A cursor is your primary interface to the query results.
+            Cursor cursor = mContext.getContentResolver().query(
+                    WeatherContract.LocationEntry.CONTENT_URI,
+                    new String[]{WeatherContract.LocationEntry._ID}, // leaving "columns" null just returns all the columns.
+                    WeatherContract.LocationEntry.COLUMN_CITY_NAME + " = ?", // cols for "where" clause
+                    new String[]{cityName}, // values for "where" clause
+                    null  // sort order
+            );
+
+            if (cursor.moveToNext())
+                return cursor.getLong(cursor.getColumnIndex(WeatherContract.LocationEntry._ID));
+            else {
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, cityName);
+                contentValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
+                contentValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, lat);
+                contentValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, lon);
+
+                Uri locationUri = mContext.getContentResolver().insert(WeatherContract.LocationEntry.CONTENT_URI, contentValues);
+
+                return ContentUris.parseId(locationUri);
+            }
+            // Otherwise, insert it using the content resolver and the base URI
+        } catch (Exception ex) {
+            Log.e(LOG_TAG, ex.getMessage());
+        }
+
         return -1;
     }
 

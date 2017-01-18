@@ -2,9 +2,14 @@ package com.udacity.eric_.sunshine.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
@@ -15,15 +20,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-public class ForecastFragment extends android.support.v4.app.Fragment {
+import com.udacity.eric_.sunshine.app.data.WeatherContract;
 
+public class ForecastFragment extends android.support.v4.app.Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    private static final int FORECAST_LOADER = 0;
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
-    private ArrayAdapter<String> mForecastAdapter;
+    private ForecastAdapter mForecastAdapter;
     private String mForecastStr;
 
     @Override
@@ -72,15 +78,8 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Now that we have some dummy forecast data, create an ArrayAdapter.
-        // The ArrayAdapter will take data from a source (like our dummy forecast) and
-        // use it to populate the ListView it's attached to.
-        mForecastAdapter =
-                new ArrayAdapter<String>(
-                        getActivity(), // The current context (this activity)
-                        R.layout.list_item_forecast, // The name of the layout ID.
-                        R.id.list_item_forecast_textview); // The ID of the textview to populate.
 
+        mForecastAdapter = new ForecastAdapter(getActivity(), null, 0);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -90,15 +89,15 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String text = mForecastAdapter.getItem(position);
+                //String text = mForecastAdapter.getItem(position);
 
-                Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
-
-                Intent detailActivity = new Intent(getContext(), DetailActivity.class);
-
-                detailActivity.putExtra(Intent.EXTRA_TEXT, text);
-
-                startActivity(detailActivity);
+//                Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
+//
+//                Intent detailActivity = new Intent(getContext(), DetailActivity.class);
+//
+//                detailActivity.putExtra(Intent.EXTRA_TEXT, text);
+//
+//                startActivity(detailActivity);
             }
         });
 
@@ -107,8 +106,14 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
         return rootView;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        getLoaderManager().initLoader(FORECAST_LOADER, null, this);
+        super.onActivityCreated(savedInstanceState);
+    }
+
     private void updateWeather() {
-        FetchWeatherTask weatherTask = new FetchWeatherTask(getContext(), mForecastAdapter);
+        FetchWeatherTask weatherTask = new FetchWeatherTask(getContext());
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String location = prefs.getString(getString(R.string.pref_location_key),
                 getString(R.string.pref_location_default));
@@ -129,5 +134,32 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String locationSetting = Utility.getPreferredLocation(getActivity());
+
+        // Sort order:  Ascending, by date.
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+                locationSetting, System.currentTimeMillis());
+
+        return new CursorLoader(getActivity(),
+                weatherForLocationUri,
+                null,
+                null,
+                null,
+                sortOrder);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mForecastAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mForecastAdapter.swapCursor(null);
     }
 }

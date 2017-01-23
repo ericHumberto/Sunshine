@@ -20,12 +20,16 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        Bundle extras = getIntent().getExtras();
-        String value1 = extras.getString(Intent.EXTRA_TEXT);
+        Intent intent = getIntent();
+
+        String mForecastStr = "";
+        if (intent != null) {
+            mForecastStr = intent.getDataString();
+        }
 
         TextView textView = (TextView) findViewById(R.id.txt_detail);
 
-        textView.setText(value1);
+        textView.setText(mForecastStr);
     }
 
     @Override

@@ -5,13 +5,12 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends ActionBarActivity {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
 
@@ -19,17 +18,11 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-
-        Intent intent = getIntent();
-
-        String mForecastStr = "";
-        if (intent != null) {
-            mForecastStr = intent.getDataString();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.detail_container, new DetailFragment())
+                    .commit();
         }
-
-        TextView textView = (TextView) findViewById(R.id.txt_detail);
-
-        textView.setText(mForecastStr);
     }
 
     @Override
@@ -70,3 +63,4 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 }
+
